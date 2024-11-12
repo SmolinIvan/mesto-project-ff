@@ -6,17 +6,17 @@ function createCard (name, link, deleteAction) {
     cardElement.querySelector('.card__image').setAttribute('src', link);
     cardElement.querySelector('.card__title').textContent = name;
     const buttonDeleteCard = cardElement.querySelector('.card__delete-button');
-    buttonDeleteCard.addEventListener('click', deleteAction);
+    buttonDeleteCard.addEventListener('click', () => {
+        deleteAction(cardElement)
+    });
     return cardElement;
 }
 
-const deleteCard = function () {
-    const deleteButton = this;
-    const card = deleteButton.closest('.card');
-    card.remove();
+function deleteCard (elementToDelete) {
+    elementToDelete.remove();
 }
 
 for (const card of initialCards) {
     const newCard =  createCard(card.name, card.link, deleteCard);
     cardsSection.append(newCard);
-};
+}
