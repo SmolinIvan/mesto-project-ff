@@ -1,3 +1,6 @@
+import './styles/index.css';
+import { initialCards } from './scripts/cards';
+
 const cardsSection = document.querySelector('.places__list');
 
 function createCard (name, link, deleteAction) {
