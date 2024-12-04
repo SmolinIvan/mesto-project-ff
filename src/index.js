@@ -1,7 +1,7 @@
 import "./styles/index.css";
 import { initialCards } from "./scripts/cards";
-import { closeModal, openModal } from "./components/modal";
-import { createCard, deleteCard } from "./components/card";
+import { clickOverlayModalHandle, closeModal, openModal } from "./components/modal";
+import { createCard, deleteCard, likeCard } from "./components/card";
 
 const cardsSection = document.querySelector(".places__list");
 const editProfileModal = document.querySelector(".popup_type_edit");
@@ -14,18 +14,11 @@ const addNewCardForm = document.forms["new-place"];
 const popUps = document.querySelectorAll(".popup");
 
 for (const popUp of popUps) {
-  popUp.addEventListener("click", (event) => {
-    if (
-      event.target.classList.contains("popup__close") ||
-      event.target.classList.contains("popup_is-opened")
-    ) {
-      closeModal(popUp);
-    }
-  });
+  popUp.addEventListener("click", clickOverlayModalHandle);
   popUp.classList.add("popup_is-animated");
 }
 
-editProfileForm.addEventListener("submit", handleFormSubmit);
+editProfileForm.addEventListener("submit", handleEditProfileSubmit);
 addNewCardForm.addEventListener("submit", handleCardSave);
 
 editProfileButton.addEventListener("click", () => {
@@ -37,7 +30,7 @@ editProfileButton.addEventListener("click", () => {
   openModal(editProfileModal);
 });
 
-function handleFormSubmit(evt) {
+function handleEditProfileSubmit(evt) {
   evt.preventDefault();
   const name = editProfileForm.elements.name;
   const description = editProfileForm.elements.description;
@@ -45,8 +38,16 @@ function handleFormSubmit(evt) {
   document.querySelector(".profile__description").textContent =
     description.value;
   closeModal(editProfileModal);
-  name.value = "";
-  description.value = "";
+  editProfileForm.reset();
+}
+
+function showImage(imageLink, imageName) {
+  const popUpImage = document.querySelector(".popup__image");
+  const popUpText = document.querySelector(".popup__caption");
+  const popUp = document.querySelector(".popup_type_image");
+  popUpImage.src = imageLink;
+  popUpText.textContent = imageName;
+  openModal(popUp);
 }
 
 function handleCardSave(evt) {
@@ -56,13 +57,12 @@ function handleCardSave(evt) {
   const newCard = createCard(
     placeName.value,
     link.value,
+    likeCard,
     deleteCard,
-    openModal
+    showImage
   );
   cardsSection.prepend(newCard);
   closeModal(newCardModal);
-  placeName.value = "";
-  link.value = "";
 }
 
 addNewCardButton.addEventListener("click", () => {
@@ -72,6 +72,6 @@ addNewCardButton.addEventListener("click", () => {
 });
 
 for (const card of initialCards) {
-  const newCard = createCard(card.name, card.link, deleteCard, openModal);
+  const newCard = createCard(card.name, card.link, likeCard, deleteCard, showImage);
   cardsSection.append(newCard);
 }

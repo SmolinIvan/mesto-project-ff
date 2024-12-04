@@ -1,4 +1,4 @@
-export function createCard(name, link, deleteAction, open) {
+export function createCard(name, link, likeAction, deleteAction, expandAction) {
   const cardTemplate = document.querySelector("#card-template").content;
   const cardElement = cardTemplate
     .querySelector(".places__item")
@@ -8,12 +8,11 @@ export function createCard(name, link, deleteAction, open) {
   cardElement.querySelector(".card__image").setAttribute("src", link);
 
   const image = cardElement.querySelector(".card__image");
-  const linkImage = image.src;
   const like = cardElement.querySelector(".card__like-button");
 
-  image.addEventListener("click", () => openImage(linkImage, name, open));
+  image.addEventListener("click", () => expandAction(link, name));
 
-  like.addEventListener("click", likeCard);
+  like.addEventListener("click", () => likeAction(like));
 
   const buttonDeleteCard = cardElement.querySelector(".card__delete-button");
   buttonDeleteCard.addEventListener("click", () => {
@@ -22,17 +21,8 @@ export function createCard(name, link, deleteAction, open) {
   return cardElement;
 }
 
-function openImage(imageLink, imageName, open) {
-  const popUpImage = document.querySelector(".popup__image");
-  const popUpText = document.querySelector(".popup__caption");
-  const popUp = document.querySelector(".popup_type_image");
-  popUpImage.src = imageLink;
-  popUpText.textContent = imageName;
-  open(popUp);
-}
-
-function likeCard(event) {
-  event.target.classList.toggle("card__like-button_is-active");
+export function likeCard(element) {
+  element.classList.toggle("card__like-button_is-active");
 }
 
 export function deleteCard(elementToDelete) {

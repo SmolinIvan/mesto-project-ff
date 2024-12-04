@@ -12,23 +12,20 @@ export function closeModal(modal) {
 }
 
 function escapeModalHandle(event) {
-  const openedPopUp = document.querySelector(".popup_is-opened");
   if (event.key === "Escape") {
-    openedPopUp.classList.remove("popup_is-opened");
+    const openedPopUp = document.querySelector(".popup_is-opened");
+    closeModal(openedPopUp);
   }
-  document.removeEventListener("keydown", escapeModalHandle);
-  document.removeEventListener('click', clickOverlayModalHandle)
 }
 
-function clickOverlayModalHandle(event) {
-  const openedPopUp = document.querySelector(".popup_is-opened");
+export function clickOverlayModalHandle(event) {
   if (
     event.target.classList.contains("popup__close") ||
     event.target.classList.contains("popup_is-opened")
   ) {
+    const openedPopUp = document.querySelector(".popup_is-opened");
     openedPopUp.classList.remove("popup_is-opened")
-    document.removeEventListener("keydown", escapeModalHandle);
-    document.removeEventListener('click', clickOverlayModalHandle)
+    closeModal(openedPopUp);
   }
 
 }
