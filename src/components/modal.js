@@ -24,7 +24,6 @@ export function clickOverlayModalHandle(event) {
     event.target.classList.contains("popup_is-opened")
   ) {
     const openedPopUp = document.querySelector(".popup_is-opened");
-    openedPopUp.classList.remove("popup_is-opened")
     closeModal(openedPopUp);
   }
 
