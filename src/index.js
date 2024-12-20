@@ -2,6 +2,7 @@ import "./styles/index.css";
 import { initialCards } from "./scripts/cards";
 import { clickOverlayModalHandle, closeModal, openModal } from "./components/modal";
 import { createCard, deleteCard, likeCard } from "./components/card";
+import { enableValidation } from "./components/validation";
 
 const cardsSection = document.querySelector(".places__list");
 const editProfileModal = document.querySelector(".popup_type_edit");
@@ -28,6 +29,13 @@ editProfileButton.addEventListener("click", () => {
     ".profile__description"
   ).textContent;
   openModal(editProfileModal);
+  enableValidation({formSelector:'.popup_is-opened', 
+    formInput: '.popup__input', 
+    buttonSelector: '.popup__button',
+    buttonInactiveClass: 'popup__button_disabled',
+    inputErrorClass: 'popup__input_type_error',
+    errorClass: 'popup__error_visible'
+  });
 });
 
 function handleEditProfileSubmit(evt) {
