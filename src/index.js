@@ -77,6 +77,13 @@ addNewCardButton.addEventListener("click", () => {
   addNewCardForm.elements["place-name"].value = "";
   addNewCardForm.elements["link"].value = "";
   openModal(newCardModal);
+  enableValidation({formSelector:'.popup_is-opened', 
+    formInput: '.popup__input', 
+    buttonSelector: '.popup__button',
+    buttonInactiveClass: 'popup__button_disabled',
+    inputErrorClass: 'popup__input_type_error',
+    errorClass: 'popup__error_visible'
+  });
 });
 
 for (const card of initialCards) {
