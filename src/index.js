@@ -3,6 +3,8 @@ import { initialCards } from "./scripts/cards";
 import { clickOverlayModalHandle, closeModal, openModal } from "./components/modal";
 import { createCard, deleteCard, likeCard } from "./components/card";
 import { enableValidation } from "./components/validation";
+import { clearValidation } from "./components/validation";
+import { getInitialCards } from "./components/api";
 
 const cardsSection = document.querySelector(".places__list");
 const editProfileModal = document.querySelector(".popup_type_edit");
@@ -11,6 +13,14 @@ const newCardModal = document.querySelector(".popup_type_new-card");
 const addNewCardButton = document.querySelector(".profile__add-button");
 const editProfileForm = document.forms["edit-profile"];
 const addNewCardForm = document.forms["new-place"];
+const formSelectors = {
+  formSelector:'.popup_is-opened', 
+  formInput: '.popup__input', 
+  buttonSelector: '.popup__button',
+  buttonInactiveClass: 'popup__button_disabled',
+  inputErrorClass: 'popup__input_type_error',
+  errorClass: 'popup__error_visible'
+};
 
 const popUps = document.querySelectorAll(".popup");
 
@@ -29,13 +39,9 @@ editProfileButton.addEventListener("click", () => {
     ".profile__description"
   ).textContent;
   openModal(editProfileModal);
-  enableValidation({formSelector:'.popup_is-opened', 
-    formInput: '.popup__input', 
-    buttonSelector: '.popup__button',
-    buttonInactiveClass: 'popup__button_disabled',
-    inputErrorClass: 'popup__input_type_error',
-    errorClass: 'popup__error_visible'
-  });
+  const openedPopup = document.querySelector('.popup_is-opened')
+  enableValidation(formSelectors);
+  clearValidation(openedPopup, formSelectors)
 });
 
 function handleEditProfileSubmit(evt) {
@@ -60,6 +66,7 @@ function showImage(imageLink, imageName) {
 
 function handleCardSave(evt) {
   evt.preventDefault();
+  const openedPopup = document.querySelector('.popup_is-opened')
   const placeName = addNewCardForm.elements["place-name"];
   const link = addNewCardForm.elements["link"];
   const newCard = createCard(
@@ -71,22 +78,25 @@ function handleCardSave(evt) {
   );
   cardsSection.prepend(newCard);
   closeModal(newCardModal);
+  clearValidation(openedPopup, formSelectors)
 }
 
 addNewCardButton.addEventListener("click", () => {
   addNewCardForm.elements["place-name"].value = "";
   addNewCardForm.elements["link"].value = "";
   openModal(newCardModal);
-  enableValidation({formSelector:'.popup_is-opened', 
-    formInput: '.popup__input', 
-    buttonSelector: '.popup__button',
-    buttonInactiveClass: 'popup__button_disabled',
-    inputErrorClass: 'popup__input_type_error',
-    errorClass: 'popup__error_visible'
-  });
+  const openedPopup = document.querySelector('.popup_is-opened')
+  enableValidation(formSelectors);
+  clearValidation(openedPopup, formSelectors)
 });
 
-for (const card of initialCards) {
-  const newCard = createCard(card.name, card.link, likeCard, deleteCard, showImage);
-  cardsSection.append(newCard);
-}
+
+getInitialCards().then(
+  (cards) => {
+    for (const card of cards) {
+      const newCard = createCard(card.name, card.link, likeCard, deleteCard, showImage);
+      cardsSection.append(newCard);
+    }
+  }
+)
+

@@ -81,7 +81,6 @@ function checkInputValidity(
 
 function hasInvalidInput(inputList) {
   return inputList.some((input) => {
-    console.log("kek");
     return !input.validity.valid;
   });
 }
@@ -91,5 +90,30 @@ function toggleButtonState(inputList, buttonElement, buttonInactiveClass) {
     buttonElement.classList.add(buttonInactiveClass);
   } else {
     buttonElement.classList.remove(buttonInactiveClass);
+    buttonElement.disabled = false;
   }
+}
+
+export function clearValidation(form, {
+  formSelector,
+  formInput,
+  buttonSelector,
+  buttonInactiveClass,
+  inputErrorClass,
+  errorClass,
+}) {
+  const buttonElement = form.querySelector(buttonSelector);
+  buttonElement.classList.add(buttonInactiveClass);
+  buttonElement.disabled = true;
+  const inputList = Array.from(form.querySelectorAll(formInput));
+  inputList.forEach((inputElement) => {
+    hideInputError(
+      form,
+      inputElement,
+      inputErrorClass,
+      errorClass
+    ) 
+  });
+  
+
 }
