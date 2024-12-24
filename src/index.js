@@ -4,7 +4,7 @@ import { clickOverlayModalHandle, closeModal, openModal } from "./components/mod
 import { createCard, deleteCard, likeCard } from "./components/card";
 import { enableValidation } from "./components/validation";
 import { clearValidation } from "./components/validation";
-import { getInitialCards } from "./components/api";
+import { getInitialCards, getCurrentUser, getCardLikes } from "./components/api";
 
 const cardsSection = document.querySelector(".places__list");
 const editProfileModal = document.querySelector(".popup_type_edit");
@@ -91,12 +91,35 @@ addNewCardButton.addEventListener("click", () => {
 });
 
 
-getInitialCards().then(
-  (cards) => {
-    for (const card of cards) {
-      const newCard = createCard(card.name, card.link, likeCard, deleteCard, showImage);
+const cardsPromise  = getInitialCards();
+const userPromise = getCurrentUser();
+
+const dataPromises = [cardsPromise, userPromise]
+
+// getInitialCards().then(
+//   (cards) => {
+//     for (const card of cards) {
+//       const likesCount = card.likes.length
+//       const newCard = createCard(card.name, card.link, likeCard, deleteCard, showImage,card._id, likesCount);
+//       cardsSection.append(newCard);
+//     }
+//   }
+// )
+
+Promise.all(dataPromises).then(
+  data => {
+    for (const card of data[0]) {
+      const likesCount = card.likes
+      const newCard = createCard(card.name, card.link, likeCard, deleteCard, showImage, card._id, data[1]._id,  likesCount);
       cardsSection.append(newCard);
     }
   }
 )
 
+// getCurrentUser().then(
+//   result => console.log(result)
+// )
+
+// getCardLikes('676a6086587f1a0f0a5b1878').then(
+//   result => console.log(result)
+// )
