@@ -4,7 +4,7 @@ import { clickOverlayModalHandle, closeModal, openModal } from "./components/mod
 import { createCard, deleteCard, likeCard } from "./components/card";
 import { enableValidation } from "./components/validation";
 import { clearValidation } from "./components/validation";
-import { getInitialCards, getCurrentUser, getCardLikes } from "./components/api";
+import { getInitialCards, getCurrentUser, getCardLikes, postCard} from "./components/api";
 
 const cardsSection = document.querySelector(".places__list");
 const editProfileModal = document.querySelector(".popup_type_edit");
@@ -69,16 +69,24 @@ function handleCardSave(evt) {
   const openedPopup = document.querySelector('.popup_is-opened')
   const placeName = addNewCardForm.elements["place-name"];
   const link = addNewCardForm.elements["link"];
-  const newCard = createCard(
-    placeName.value,
-    link.value,
-    likeCard,
-    deleteCard,
-    showImage
-  );
-  cardsSection.prepend(newCard);
-  closeModal(newCardModal);
-  clearValidation(openedPopup, formSelectors)
+  postCard(placeName.value, link.value).then((result) => {
+    console.log(result)
+    const newCard = createCard(
+      placeName.value,
+      link.value,
+      likeCard,
+      deleteCard,
+      showImage,
+      result._id, 
+      result.owner._id,  
+      []
+    );
+    cardsSection.prepend(newCard);
+    closeModal(newCardModal);
+    clearValidation(openedPopup, formSelectors)
+   
+  })
+
 }
 
 addNewCardButton.addEventListener("click", () => {
@@ -111,10 +119,15 @@ Promise.all(dataPromises).then(
     for (const card of data[0]) {
       const likesCount = card.likes
       const newCard = createCard(card.name, card.link, likeCard, deleteCard, showImage, card._id, data[1]._id,  likesCount);
+      if (card.owner._id != data[1]._id) {
+        newCard.querySelector(".card__delete-button").remove()
+      }
       cardsSection.append(newCard);
     }
   }
 )
+
+
 
 // getCurrentUser().then(
 //   result => console.log(result)

@@ -17,6 +17,20 @@ export function getInitialCards () {
       })
 } 
 
+export function postCard (name, link) {
+  return fetch(`${config.baseUrl}/cards`, {
+    method: 'POST',
+    headers: config.headers,
+    body: JSON.stringify({
+      name: name,
+      link: link
+    })
+  })
+    .then(res => {
+      return res.json();
+    })
+} 
+
 export function getCurrentUser()  {
   return fetch(`${config.baseUrl}/users/me`, {
     headers: config.headers
@@ -47,6 +61,16 @@ export function putLikesCard(cardId) {
 
 export function removeLikesCard(cardId) {
   return fetch(`${config.baseUrl}/cards/likes/${cardId}`, {
+    method: 'DELETE',
+    headers: config.headers
+  })
+    .then(res => {
+      return res.json();
+    })
+} 
+
+export function deletePostedCard(cardId) {
+  return fetch(`${config.baseUrl}/cards/${cardId}`, {
     method: 'DELETE',
     headers: config.headers
   })

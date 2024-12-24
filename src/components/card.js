@@ -1,4 +1,4 @@
-import { getCardLikes, getInitialCards, putLikesCard, removeLikesCard } from "./api";
+import { deletePostedCard, getInitialCards, putLikesCard, removeLikesCard } from "./api";
 
 export function createCard(name, link, likeAction, deleteAction, expandAction, cardId , userId, likes) {
   const cardTemplate = document.querySelector("#card-template").content;
@@ -6,6 +6,7 @@ export function createCard(name, link, likeAction, deleteAction, expandAction, c
     .querySelector(".places__item")
     .cloneNode(true);
 
+  const deleteButton = cardElement.querySelector(".card__delete-button");
 
   cardElement.querySelector(".card__title").textContent = name;
   cardElement.querySelector(".card__image").setAttribute("src", link);
@@ -30,8 +31,10 @@ export function createCard(name, link, likeAction, deleteAction, expandAction, c
 
   const buttonDeleteCard = cardElement.querySelector(".card__delete-button");
   buttonDeleteCard.addEventListener("click", () => {
-    deleteAction(cardElement);
+    deleteAction(cardElement, cardId, userId);
   });
+  
+  
   return cardElement;
 }
 
@@ -72,7 +75,18 @@ export function likeCard(element, card, cardId, userId) {
   element.classList.toggle("card__like-button_is-active");
 }
 
-export function deleteCard(elementToDelete) {
+export function deleteCard(elementToDelete, cardId, userId) {
+  getInitialCards().then(
+    cards => { 
+      const currentCard = cards.find(card => card._owner == userId)
+      // const currentUser = currentCard.find(card => card.owner == userId)
+      if (currentCard) {
+        deletePostedCard(cardId).then(res => console.log(res))
+      } else {
+        deletePostedCard(cardId)
+      }
+    }
+  )
   elementToDelete.remove();
 }
 
