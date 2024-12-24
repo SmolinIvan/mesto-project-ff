@@ -1,10 +1,9 @@
 import "./styles/index.css";
-import { initialCards } from "./scripts/cards";
 import { clickOverlayModalHandle, closeModal, openModal } from "./components/modal";
 import { createCard, deleteCard, likeCard } from "./components/card";
 import { enableValidation } from "./components/validation";
 import { clearValidation } from "./components/validation";
-import { getInitialCards, getCurrentUser, getCardLikes, postCard} from "./components/api";
+import { getInitialCards, getCurrentUser, postCard} from "./components/api";
 
 const cardsSection = document.querySelector(".places__list");
 const editProfileModal = document.querySelector(".popup_type_edit");
@@ -69,24 +68,21 @@ function handleCardSave(evt) {
   const openedPopup = document.querySelector('.popup_is-opened')
   const placeName = addNewCardForm.elements["place-name"];
   const link = addNewCardForm.elements["link"];
-  postCard(placeName.value, link.value).then((result) => {
-    console.log(result)
+  postCard(placeName.value, link.value).then((createdCardData) => {
     const newCard = createCard(
       placeName.value,
       link.value,
       likeCard,
       deleteCard,
       showImage,
-      result._id, 
-      result.owner._id,  
+      createdCardData._id, 
+      createdCardData.owner._id,  
       []
     );
     cardsSection.prepend(newCard);
     closeModal(newCardModal);
     clearValidation(openedPopup, formSelectors)
-   
   })
-
 }
 
 addNewCardButton.addEventListener("click", () => {
@@ -98,41 +94,23 @@ addNewCardButton.addEventListener("click", () => {
   clearValidation(openedPopup, formSelectors)
 });
 
-
 const cardsPromise  = getInitialCards();
 const userPromise = getCurrentUser();
-
 const dataPromises = [cardsPromise, userPromise]
-
-// getInitialCards().then(
-//   (cards) => {
-//     for (const card of cards) {
-//       const likesCount = card.likes.length
-//       const newCard = createCard(card.name, card.link, likeCard, deleteCard, showImage,card._id, likesCount);
-//       cardsSection.append(newCard);
-//     }
-//   }
-// )
 
 Promise.all(dataPromises).then(
   data => {
-    for (const card of data[0]) {
+    const cardsInfo = data[0]
+    const userInfo = data[1]
+    for (const card of cardsInfo) {
       const likesCount = card.likes
-      const newCard = createCard(card.name, card.link, likeCard, deleteCard, showImage, card._id, data[1]._id,  likesCount);
-      if (card.owner._id != data[1]._id) {
+      const newCard = createCard(card.name, card.link, likeCard, deleteCard, showImage, card._id, userInfo._id,  likesCount);
+      if (card.owner._id != userInfo._id) {
         newCard.querySelector(".card__delete-button").remove()
       }
       cardsSection.append(newCard);
     }
+    editProfileForm.tex = userInfo.name;
+    editProfileForm.elements.description.value = userInfo.about;
   }
 )
-
-
-
-// getCurrentUser().then(
-//   result => console.log(result)
-// )
-
-// getCardLikes('676a6086587f1a0f0a5b1878').then(
-//   result => console.log(result)
-// )

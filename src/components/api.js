@@ -49,7 +49,7 @@ export function getCardLikes(cardId) {
     })
 } 
 
-export function putLikesCard(cardId) {
+export function putLikeCard(cardId) {
   return fetch(`${config.baseUrl}/cards/likes/${cardId}`, {
     method: 'PUT',
     headers: config.headers
@@ -59,7 +59,7 @@ export function putLikesCard(cardId) {
     })
 } 
 
-export function removeLikesCard(cardId) {
+export function deleteLikeCard(cardId) {
   return fetch(`${config.baseUrl}/cards/likes/${cardId}`, {
     method: 'DELETE',
     headers: config.headers
@@ -73,6 +73,20 @@ export function deletePostedCard(cardId) {
   return fetch(`${config.baseUrl}/cards/${cardId}`, {
     method: 'DELETE',
     headers: config.headers
+  })
+    .then(res => {
+      return res.json();
+    })
+} 
+
+export function patchProfileInfo(name, about) {
+  return fetch(`${config.baseUrl}/users/me`, {
+    method: 'PATCH',
+    headers: config.headers,
+    body: JSON.stringify({
+      name: name,
+      about: about
+    })
   })
     .then(res => {
       return res.json();
