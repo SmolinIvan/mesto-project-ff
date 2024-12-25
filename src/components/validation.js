@@ -94,26 +94,22 @@ function toggleButtonState(inputList, buttonElement, buttonInactiveClass) {
   }
 }
 
-export function clearValidation(form, {
-  formSelector,
-  formInput,
-  buttonSelector,
-  buttonInactiveClass,
-  inputErrorClass,
-  errorClass,
-}) {
+export function clearValidation(
+  form,
+  {
+    formSelector,
+    formInput,
+    buttonSelector,
+    buttonInactiveClass,
+    inputErrorClass,
+    errorClass,
+  }
+) {
   const buttonElement = form.querySelector(buttonSelector);
   buttonElement.classList.add(buttonInactiveClass);
   buttonElement.disabled = true;
   const inputList = Array.from(form.querySelectorAll(formInput));
   inputList.forEach((inputElement) => {
-    hideInputError(
-      form,
-      inputElement,
-      inputErrorClass,
-      errorClass
-    ) 
+    hideInputError(form, inputElement, inputErrorClass, errorClass);
   });
-  
-
 }
