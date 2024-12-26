@@ -1,14 +1,31 @@
 .profile__image {
+  display: flex;
   width: 120px;
   height: 120px;
+  margin: 0 29px 0 0;
   -webkit-border-radius: 50%;
   -moz-border-radius: 50%;
   border-radius: 50%;
-  background-size: cover;
-  background-position: center;
   background-image: url('../../../images/avatar.jpg');
-  margin: 0 29px 0 0;
+  background-position: center;
+  background-size: cover;
 }
+
+.profile__image:hover {
+  cursor: pointer;
+}
+
+.profile__image::before {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  
+  width: inherit;
+  height: inherit;
+  border-radius: 100%;
+  opacity: 0%;
+  background-color: black;
+ }
 
 @media screen and (max-width: 740px) {
   .profile__image {

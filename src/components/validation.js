@@ -6,25 +6,28 @@ export function enableValidation({
   buttonSelector,
   buttonInactiveClass,
 }) {
-  const formElement = document.querySelector(formSelector);
-  const buttonElement = formElement.querySelector(buttonSelector);
-  formElement.addEventListener("submit", function (evt) {
-    evt.preventDefault();
-  });
+  const formElements = document.querySelectorAll(formSelector);
 
-  const inputList = Array.from(formElement.querySelectorAll(formInput));
-  inputList.forEach((inputElement) => {
-    inputElement.addEventListener("input", function () {
-      checkInputValidity(
-        formElement,
-        inputElement,
-        inputErrorClass,
-        errorClass
-      );
-      toggleButtonState(inputList, buttonElement, buttonInactiveClass);
+  for (const formElement of formElements) {
+    const buttonElement = formElement.querySelector(buttonSelector);
+    formElement.addEventListener("submit", function (evt) {
+      evt.preventDefault();
     });
-  });
-  toggleButtonState(inputList, buttonElement);
+
+    const inputList = Array.from(formElement.querySelectorAll(formInput));
+    inputList.forEach((inputElement) => {
+      inputElement.addEventListener("input", function () {
+        checkInputValidity(
+          formElement,
+          inputElement,
+          inputErrorClass,
+          errorClass
+        );
+        toggleButtonState(inputList, buttonElement, buttonInactiveClass);
+      });
+    });
+    toggleButtonState(inputList, buttonElement);
+  }
 }
 
 function showInputError(
@@ -97,7 +100,6 @@ function toggleButtonState(inputList, buttonElement, buttonInactiveClass) {
 export function clearValidation(
   form,
   {
-    formSelector,
     formInput,
     buttonSelector,
     buttonInactiveClass,

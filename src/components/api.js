@@ -101,3 +101,18 @@ export function patchProfileInfo(name, about) {
     return Promise.reject(`Ошибка: ${res.status}`);
   });
 }
+
+export function patchAvatar(link) {
+  return fetch(`${config.baseUrl}/users/me/avatar`, {
+    method: "PATCH",
+    headers: config.headers,
+    body: JSON.stringify({
+      avatar: link,
+    }),
+  }).then((res) => {
+    if (res.ok) {
+      return res.json();
+    }
+    return Promise.reject(`Ошибка: ${res.status}`);
+  });
+}

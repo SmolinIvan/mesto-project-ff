@@ -1,0 +1,7 @@
+.profile__editor {
+  margin: auto;
+  display: none;
+  z-index: 2;
+  width: 26px;
+  height: 26px;
+}
