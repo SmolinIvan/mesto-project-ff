@@ -26,6 +26,18 @@ const editProfileForm = document.forms["edit-profile"];
 const addNewCardForm = document.forms["new-place"];
 const editAvatarForm = document.forms["edit-avatar"];
 
+const userNameInput = editProfileForm.elements.name;
+const userAboutInput = editProfileForm.elements.description;
+const userAvatarInput = editAvatarForm.elements.avatar;
+const cardNameInput = addNewCardForm.elements["place-name"];
+const cardLinkInput = addNewCardForm.elements["link"];
+const userNameOnScreen = document.querySelector(".profile__title")
+const userDescriptionOnScreen = document.querySelector(".profile__description")
+
+const popUpImage = document.querySelector(".popup__image");
+const popUpText = document.querySelector(".popup__caption");
+const popUp = document.querySelector(".popup_type_image");
+
 const formSelectors = {
   formSelector: ".popup__form",
   formInput: ".popup__input",
@@ -52,23 +64,19 @@ for (const popUp of popUps) {
 
 avatar.addEventListener("click", () => {
   openModal(avatarModal);
-  const openedPopup = document.querySelector(".popup_is-opened");
-  clearValidation(openedPopup, validationConfig);
+  clearValidation(editAvatarForm, validationConfig);
 });
 
 function handleEditAvatar(evt) {
   evt.preventDefault();
-  const link = editAvatarForm.elements.avatar;
   const saveButton = editAvatarForm.querySelector(".button");
   saveButton.textContent = "Сохранение...";
-  patchAvatar(link.value)
+  patchAvatar(userAvatarInput.value)
     .then(() => {
-      avatar.style.backgroundImage = `url(${link.value})`;
-    })
-    .then(() => {
+      avatar.style.backgroundImage = `url(${userAvatarInput.value})`;
       saveButton.textContent = "Сохранить";
+      editAvatarForm.reset();
       closeModal(avatarModal);
-      clearValidation(openedPopup, validationConfig);
     })
     .catch((err) => {
       saveButton.textContent = "Не удалось изменить аватар :(";
@@ -79,27 +87,20 @@ function handleEditAvatar(evt) {
 editAvatarForm.addEventListener("submit", handleEditAvatar);
 
 editProfileButton.addEventListener("click", () => {
-  editProfileForm.elements.name.value =
-    document.querySelector(".profile__title").textContent;
-  editProfileForm.elements.description.value = document.querySelector(
-    ".profile__description"
-  ).textContent;
+  userNameInput.value = document.querySelector(".profile__title").textContent;
+  userAboutInput.value = document.querySelector(".profile__description").textContent;
   openModal(editProfileModal);
-  const openedPopup = document.querySelector(".popup_is-opened");
-  clearValidation(openedPopup, validationConfig);
+  clearValidation(editProfileForm, validationConfig);
 });
 
 function handleEditProfileSubmit(evt) {
   evt.preventDefault();
-  const name = editProfileForm.elements.name;
-  const description = editProfileForm.elements.description;
   const saveButton = editProfileForm.querySelector(".button");
   saveButton.textContent = "Сохранение...";
-  patchProfileInfo(name.value, description.value)
+  patchProfileInfo(userNameInput.value, userAboutInput.value)
     .then(() => {
-      document.querySelector(".profile__title").textContent = name.value;
-      document.querySelector(".profile__description").textContent =
-        description.value;
+      userNameOnScreen.textContent = userNameInput.value;
+      userDescriptionOnScreen.textContent = userAboutInput.value;
     })
     .then(() => {
       saveButton.textContent = "Сохранить";
@@ -115,30 +116,26 @@ function handleEditProfileSubmit(evt) {
 editProfileForm.addEventListener("submit", handleEditProfileSubmit);
 
 addNewCardButton.addEventListener("click", () => {
-  addNewCardForm.elements["place-name"].value = "";
-  addNewCardForm.elements["link"].value = "";
+  cardNameInput.value = "";
+  cardLinkInput.value = "";
   openModal(newCardModal);
-  const openedPopup = document.querySelector(".popup_is-opened");
-  clearValidation(openedPopup, validationConfig);
+  clearValidation(addNewCardForm, validationConfig);
 });
 
 function handleCardSave(evt) {
   evt.preventDefault();
-  const openedPopup = document.querySelector(".popup_is-opened");
-  const placeName = addNewCardForm.elements["place-name"];
   const saveButton = addNewCardForm.querySelector(".button");
-  const link = addNewCardForm.elements["link"];
   saveButton.textContent = "Сохранение...";
-  postCard(placeName.value, link.value)
+  postCard(cardNameInput.value, cardLinkInput.value)
     .then((createdCardData) => {
       const newCard = createCard(
-        placeName.value,
-        link.value,
+        createdCardData.owner,
+        cardNameInput.value,
+        cardLinkInput.value,
         likeCard,
         deleteCard,
         showImage,
         createdCardData._id,
-        createdCardData.owner._id,
         []
       );
       cardsSection.prepend(newCard);
@@ -146,7 +143,6 @@ function handleCardSave(evt) {
     .then(() => {
       saveButton.textContent = "Сохранить";
       closeModal(newCardModal);
-      clearValidation(openedPopup, validationConfig);
     })
     .catch((err) => {
       saveButton.textContent = "Не удалось сохранить картинку :(";
@@ -157,9 +153,6 @@ function handleCardSave(evt) {
 addNewCardForm.addEventListener("submit", handleCardSave);
 
 function showImage(imageLink, imageName) {
-  const popUpImage = document.querySelector(".popup__image");
-  const popUpText = document.querySelector(".popup__caption");
-  const popUp = document.querySelector(".popup_type_image");
   popUpImage.src = imageLink;
   popUpText.textContent = imageName;
   openModal(popUp);
@@ -175,31 +168,32 @@ Promise.all(dataPromises)
   .then((data) => {
     const cardsInfo = data[0];
     const userInfo = data[1];
+    
     for (const card of cardsInfo) {
-      const likesCount = card.likes;
+      const likesInfo = card.likes;
       const newCard = createCard(
+        userInfo,
         card.name,
         card.link,
         likeCard,
         deleteCard,
         showImage,
         card._id,
-        userInfo._id,
-        likesCount
+        likesInfo
       );
       if (card.owner._id != userInfo._id) {
         newCard.querySelector(".card__delete-button").remove();
       }
       cardsSection.append(newCard);
     }
-    document.querySelector(".profile__title").textContent = userInfo.name;
-    document.querySelector(".profile__description").textContent =
+    userNameOnScreen.textContent = userInfo.name;
+    userDescriptionOnScreen.textContent =
       userInfo.about;
     avatar.style.backgroundImage = `url(${userInfo.avatar})`;
   })
   .catch((err) => {
-    document.querySelector(".profile__title").textContent = "Не удалось";
-    document.querySelector(".profile__description").textContent =
+    userNameOnScreen.textContent = "Не удалось";
+    userNameOnScreen.textContent =
       "Загрузить данные";
     const errorCard = createCard(
       "Ошибка загрузки",
