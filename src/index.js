@@ -131,8 +131,12 @@ function handleCardSave(evt) {
   postCard(cardNameInput.value, cardLinkInput.value)
     .then((createdCardData) => {
       const newCard = createCard(
-        createdCardData.owner,
-        createdCardData,
+        createdCardData.owner._id,
+        createdCardData._id,
+        createdCardData.name,
+        createdCardData.link,
+        createdCardData.owner._id,
+        [],
         likeCard,
         deleteCard,
         showImage
@@ -172,7 +176,11 @@ Promise.all(dataPromises)
     for (const card of cardsInfo) {
       const newCard = createCard(
         userInfo._id,
-        card,
+        card._id,
+        card.name,
+        card.link,
+        card.owner._id,
+        card.likes,
         likeCard,
         deleteCard,
         showImage
@@ -184,20 +192,15 @@ Promise.all(dataPromises)
     avatar.style.backgroundImage = `url(${userInfo.avatar})`;
   })
   .catch((err) => {
-    const errorCardData = {
-      likes: [],
-      _id: null,
-      name: "Ошибка загрузки",
-      link: null,
-      owner: {
-        _id: null,
-      },
-    };
     userNameOnScreen.textContent = "Не удалось";
     userDescriptionOnScreen.textContent = "Загрузить данные";
     const errorCard = createCard(
+      null,
+      null,
+      "Нет данных",
       "",
-      errorCardData,
+      null,
+      [],
       () => {},
       () => {},
       () => {}

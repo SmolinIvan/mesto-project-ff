@@ -2,17 +2,15 @@ import { deletePostedCard, putLikeCard, deleteLikeCard } from "./api";
 
 export function createCard(
   userId,
-  dataCard,
+  cardID,
+  cardName,
+  cardLink,
+  cardOwnerID,
+  cardLikes,
   likeAction,
   deleteAction,
   expandAction
 ) {
-  const cardLikes = dataCard.likes;
-  const cardID = dataCard._id;
-  const cardName = dataCard.name;
-  const cardLink = dataCard.link;
-  const cardOwner = dataCard.owner._id;
-
   const cardTemplate = document.querySelector("#card-template").content;
   const cardElement = cardTemplate
     .querySelector(".places__item")
@@ -44,16 +42,16 @@ export function createCard(
     deleteAction(cardElement, cardID);
   });
 
-  if (cardOwner != userId) {
+  if (cardOwnerID != userId) {
     cardElement.querySelector(".card__delete-button").remove();
   }
 
   return cardElement;
 }
 
-export function likeCard(likeElement, currentCardElement, dataCardID) {
+export function likeCard(likeElement, currentCardElement, cardID) {
   if (likeElement.classList.contains("card__like-button_is-active")) {
-    deleteLikeCard(dataCardID)
+    deleteLikeCard(cardID)
       .then((cardData) => {
         currentCardElement.querySelector(".card__like-counter").textContent =
           cardData.likes.length;
@@ -61,7 +59,7 @@ export function likeCard(likeElement, currentCardElement, dataCardID) {
       })
       .catch((err) => console.log(err));
   } else {
-    putLikeCard(dataCardID)
+    putLikeCard(cardID)
       .then((cardData) => {
         currentCardElement.querySelector(".card__like-counter").textContent =
           cardData.likes.length;
@@ -71,8 +69,8 @@ export function likeCard(likeElement, currentCardElement, dataCardID) {
   }
 }
 
-export function deleteCard(elementToDelete, dataCardID) {
-  deletePostedCard(dataCardID)
+export function deleteCard(elementToDelete, cardID) {
+  deletePostedCard(cardID)
     .then(() => elementToDelete.remove())
     .catch((err) => console.log(err));
 }
