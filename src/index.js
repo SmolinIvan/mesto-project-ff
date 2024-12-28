@@ -31,8 +31,8 @@ const userAboutInput = editProfileForm.elements.description;
 const userAvatarInput = editAvatarForm.elements.avatar;
 const cardNameInput = addNewCardForm.elements["place-name"];
 const cardLinkInput = addNewCardForm.elements["link"];
-const userNameOnScreen = document.querySelector(".profile__title")
-const userDescriptionOnScreen = document.querySelector(".profile__description")
+const userNameOnScreen = document.querySelector(".profile__title");
+const userDescriptionOnScreen = document.querySelector(".profile__description");
 
 const popUpImage = document.querySelector(".popup__image");
 const popUpText = document.querySelector(".popup__caption");
@@ -88,7 +88,9 @@ editAvatarForm.addEventListener("submit", handleEditAvatar);
 
 editProfileButton.addEventListener("click", () => {
   userNameInput.value = document.querySelector(".profile__title").textContent;
-  userAboutInput.value = document.querySelector(".profile__description").textContent;
+  userAboutInput.value = document.querySelector(
+    ".profile__description"
+  ).textContent;
   openModal(editProfileModal);
   clearValidation(editProfileForm, validationConfig);
 });
@@ -130,13 +132,10 @@ function handleCardSave(evt) {
     .then((createdCardData) => {
       const newCard = createCard(
         createdCardData.owner,
-        cardNameInput.value,
-        cardLinkInput.value,
+        createdCardData,
         likeCard,
         deleteCard,
-        showImage,
-        createdCardData._id,
-        []
+        showImage
       );
       cardsSection.prepend(newCard);
     })
@@ -154,6 +153,7 @@ addNewCardForm.addEventListener("submit", handleCardSave);
 
 function showImage(imageLink, imageName) {
   popUpImage.src = imageLink;
+  popUpImage.alt = imageName;
   popUpText.textContent = imageName;
   openModal(popUp);
 }
@@ -168,45 +168,41 @@ Promise.all(dataPromises)
   .then((data) => {
     const cardsInfo = data[0];
     const userInfo = data[1];
-    
+
     for (const card of cardsInfo) {
-      const likesInfo = card.likes;
       const newCard = createCard(
-        userInfo,
-        card.name,
-        card.link,
+        userInfo._id,
+        card,
         likeCard,
         deleteCard,
-        showImage,
-        card._id,
-        likesInfo
+        showImage
       );
-      if (card.owner._id != userInfo._id) {
-        newCard.querySelector(".card__delete-button").remove();
-      }
       cardsSection.append(newCard);
     }
     userNameOnScreen.textContent = userInfo.name;
-    userDescriptionOnScreen.textContent =
-      userInfo.about;
+    userDescriptionOnScreen.textContent = userInfo.about;
     avatar.style.backgroundImage = `url(${userInfo.avatar})`;
   })
   .catch((err) => {
+    const errorCardData = {
+      likes: [],
+      _id: null,
+      name: "Ошибка загрузки",
+      link: null,
+      owner: {
+        _id: null,
+      },
+    };
     userNameOnScreen.textContent = "Не удалось";
-    userNameOnScreen.textContent =
-      "Загрузить данные";
+    userDescriptionOnScreen.textContent = "Загрузить данные";
     const errorCard = createCard(
-      "Ошибка загрузки",
       "",
-      likeCard,
-      deleteCard,
-      showImage,
-      null,
-      null,
-      []
+      errorCardData,
+      () => {},
+      () => {},
+      () => {}
     );
     errorCard.querySelector(".card__like-block").remove();
-    errorCard.querySelector(".card__delete-button").remove();
     cardsSection.append(errorCard);
     console.log(err);
   });
